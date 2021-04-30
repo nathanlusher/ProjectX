@@ -18,9 +18,9 @@ namespace CompanyX.ProjectX.Tests.Unit
             Mock<ISanitiser<Transaction>> mockSanitiser = CreateMockSanitiser(transaction);
 
             ITransactionReader reader = CreateReader(mockRepo.Object, mockSanitiser.Object);
-            Transaction returnedTranscation = await reader.GetTransactionAsync(transaction.Id);
+            Transaction returnedTransaction = await reader.GetTransactionAsync(transaction.Response.Id);
 
-            Assert.Equal(transaction, returnedTranscation);
+            Assert.Equal(transaction, returnedTransaction);
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace CompanyX.ProjectX.Tests.Unit
             Mock<IRepository<Transaction>> mockRepo = CreateMockRepo(transaction);
 
             ITransactionReader reader = CreateReader(mockRepo.Object, new TransactionSanitiser());
-            Transaction returnedTransaction = await reader.GetTransactionAsync(transaction.Id);
+            Transaction returnedTransaction = await reader.GetTransactionAsync(transaction.Response.Id);
 
             Assert.Equal("****5678", returnedTransaction.Request.Shopper.Card.Number);
         }
@@ -58,7 +58,7 @@ namespace CompanyX.ProjectX.Tests.Unit
             Mock<IRepository<Transaction>> mockRepo = new();
 
             mockRepo
-                .Setup(r => r.GetItemAsync(transaction.Id))
+                .Setup(r => r.GetItemAsync(transaction.Response.Id))
                 .ReturnsAsync(transaction);
 
             return mockRepo;

@@ -1,9 +1,13 @@
 ﻿using CompanyX.ProjectX.WebApi;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.IO;
 using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CompanyX.ProjectX.Tests.Integration
 {
@@ -13,27 +17,44 @@ namespace CompanyX.ProjectX.Tests.Integration
 
         protected HttpClient Client { get; }
 
-        protected JsonSerializerSettings DefaultJsonSettings { get; }
+        protected JsonSerializerOptions DefaultJsonOptions { get; }
+
+        protected static string NewGuid => Guid.NewGuid().ToString();
 
         public WebApiTest()
         {
+            string webApiRoot = Path.GetDirectoryName(typeof(Startup).Assembly.Location);
+
             _server = new TestServer(new WebHostBuilder()
-           .UseStartup<Startup>());
+                .UseEnvironment("Development")
+                .UseContentRoot(webApiRoot)
+                .UseConfiguration(new ConfigurationBuilder()
+                    .SetBasePath(webApiRoot)
+                    .AddJsonFile("appsettings.json")
+                    .Build())
+                .UseStartup<Startup>());
+
             Client = _server.CreateClient();
 
-            DefaultJsonSettings = CreateJsonSettings();
+            DefaultJsonOptions = CreateJsonSettings();
         }
 
-        private static JsonSerializerSettings CreateJsonSettings()
+        protected T Resolve<T>()
         {
-            return new JsonSerializerSettings
+            return _server.Host.Services.GetRequiredService<T>();
+        }
+
+        private static JsonSerializerOptions CreateJsonSettings()
+        {
+            JsonSerializerOptions settings = new()
             {
-                NullValueHandling = NullValueHandling.Ignore,
-                ContractResolver = new DefaultContractResolver
-                {
-                    NamingStrategy = new CamelCaseNamingStrategy()
-                }
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             };
+
+            settings.Converters.Add(new JsonStringEnumConverter());
+
+            return settings;
         }
     }
 }

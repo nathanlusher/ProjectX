@@ -17,12 +17,13 @@ namespace CompanyX.ProjectX.WebApi
 
         public IConfiguration Configuration { get; }
 
-        public void ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureSwaggerMiddleware();
             services.InjectDependencies();
-            services.AddControllers();
+            services.ConfigureJsonSerialiser();
 
+            services.AddControllers();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

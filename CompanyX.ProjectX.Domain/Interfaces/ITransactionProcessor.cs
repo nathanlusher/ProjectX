@@ -13,6 +13,6 @@ namespace CompanyX.ProjectX.Domain.Interfaces
         /// </summary>
         /// <param name="request">The transaction request to process.</param>
         /// <returns>The transaction resulting from processing the request.</returns>
-        Task<Transaction> ProcessTransactionAsync(TransactionRequest request);
+        Task<TransactionResponse> ProcessTransactionAsync(TransactionRequest request);
     }
 }

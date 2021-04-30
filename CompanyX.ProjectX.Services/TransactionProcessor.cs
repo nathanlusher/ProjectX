@@ -35,7 +35,7 @@ namespace CompanyX.ProjectX.Services
         }
 
         /// <inheritdoc/>
-        public async Task<Transaction> ProcessTransactionAsync(TransactionRequest request)
+        public async Task<TransactionResponse> ProcessTransactionAsync(TransactionRequest request)
         {
             Transaction transaction = CreateTransaction(request);
 
@@ -43,26 +43,27 @@ namespace CompanyX.ProjectX.Services
 
             if (!validationResult.IsValid)
             {
-                transaction.Status = TransactionStatus.DetailsInvalid;
-                transaction.StatusMessage = validationResult.Message;
-                return transaction;
+                transaction.Response.Status = TransactionStatus.DetailsInvalid;
+                transaction.Response.StatusMessage = validationResult.Message;
+                return transaction.Response;
             }
 
-            TransactionRequestResponse response = await _bank.SubmitRequestAsync(request);
-            transaction.Id = response.TransactionId;
-            transaction.Status = GetStatusFromResponseCode(response.Code);
-            transaction.StatusMessage = response.Code;
+            BankTransactionRequestResponse response = await _bank.SubmitRequestAsync(request);
+            transaction.Response.Id = response.TransactionId;
+            transaction.Response.Status = GetStatusFromResponseCode(response.Code);
+            transaction.Response.StatusMessage = response.Code;
 
             await SaveAsync(transaction);
 
-            return transaction;
+            return transaction.Response;
         }
 
         private static Transaction CreateTransaction(TransactionRequest request)
         {
             return new Transaction
             {
-                Request = request
+                Request = request,
+                Response = new TransactionResponse()
             };
         }
 

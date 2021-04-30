@@ -14,6 +14,7 @@ namespace CompanyX.ProjectX.Tests.Unit
         [InlineData("123456781234567", false)]
         [InlineData("123456781234567W", false)]
         [InlineData("", false)]
+        [InlineData(null, false)]
         public void CreditCardNumberIsValidated(string number, bool valid)
         {
             Domain.Models.TransactionRequest transaction = TestData.CreateRequest();

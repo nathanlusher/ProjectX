@@ -19,7 +19,7 @@ namespace CompanyX.ProjectX.Tests.Unit
 
             _mockBank
                 .Setup(b => b.SubmitRequestAsync(It.IsAny<TransactionRequest>()))
-                .ReturnsAsync(new TransactionRequestResponse { TransactionId = TestData.NewGuid, Code = "AOK" });
+                .ReturnsAsync(new BankTransactionRequestResponse { TransactionId = TestData.NewGuid, Code = "AOK" });
 
             _mockRepo = new Mock<IRepository<Transaction>>();
 
@@ -34,7 +34,7 @@ namespace CompanyX.ProjectX.Tests.Unit
         {
             TransactionRequest request = TestData.CreateRequest();
             ITransactionProcessor processor = CreateProcessor();
-            Transaction transaction = await processor.ProcessTransactionAsync(request);
+            TransactionResponse transaction = await processor.ProcessTransactionAsync(request);
 
             Assert.NotNull(transaction.Id);
         }
@@ -52,11 +52,11 @@ namespace CompanyX.ProjectX.Tests.Unit
 
             _mockBank
                 .Setup(b => b.SubmitRequestAsync(request))
-                .ReturnsAsync(new TransactionRequestResponse { TransactionId = TestData.NewGuid, Code = code });
+                .ReturnsAsync(new BankTransactionRequestResponse { TransactionId = TestData.NewGuid, Code = code });
 
             ITransactionProcessor processor = CreateProcessor();
 
-            Transaction transaction = await processor.ProcessTransactionAsync(request);
+            TransactionResponse transaction = await processor.ProcessTransactionAsync(request);
 
             Assert.Equal(expectedStatus, transaction.Status);
             Assert.Equal(code, transaction.StatusMessage);
@@ -70,7 +70,7 @@ namespace CompanyX.ProjectX.Tests.Unit
 
             _mockBank
                 .Setup(b => b.SubmitRequestAsync(request))
-                .ReturnsAsync(new TransactionRequestResponse { TransactionId = transactionId, Code = TestData.NewGuid });
+                .ReturnsAsync(new BankTransactionRequestResponse { TransactionId = transactionId, Code = TestData.NewGuid });
 
             Transaction savedTransaction = null;
 
@@ -79,11 +79,11 @@ namespace CompanyX.ProjectX.Tests.Unit
                 .Callback((Transaction t) => savedTransaction = t);
 
             ITransactionProcessor processor = CreateProcessor();
-            Transaction transaction = await processor.ProcessTransactionAsync(request);
+            TransactionResponse transaction = await processor.ProcessTransactionAsync(request);
 
             Assert.NotNull(savedTransaction);
             Assert.Equal(request, savedTransaction.Request);
-            Assert.Equal(transactionId, savedTransaction.Id);
+            Assert.Equal(transactionId, savedTransaction.Response.Id);
         }
 
         [Fact]
@@ -93,7 +93,7 @@ namespace CompanyX.ProjectX.Tests.Unit
 
             _mockBank
                 .Setup(b => b.SubmitRequestAsync(request))
-                .ReturnsAsync(new TransactionRequestResponse());
+                .ReturnsAsync(new BankTransactionRequestResponse());
 
             Transaction savedTransaction = null;
 
@@ -102,7 +102,7 @@ namespace CompanyX.ProjectX.Tests.Unit
                 .Callback((Transaction t) => savedTransaction = t);
 
             ITransactionProcessor processor = CreateProcessor();
-            Transaction transaction = await processor.ProcessTransactionAsync(request);
+            TransactionResponse transactionResponse = await processor.ProcessTransactionAsync(request);
 
             Assert.NotNull(savedTransaction);
             Assert.Null(savedTransaction.Request.Shopper.Card.SecurityCode);
@@ -120,7 +120,7 @@ namespace CompanyX.ProjectX.Tests.Unit
                 .Returns(ValidationResult.Invalid(statusMessage));
 
             ITransactionProcessor processor = CreateProcessor();
-            Transaction transaction = await processor.ProcessTransactionAsync(request);
+            TransactionResponse transaction = await processor.ProcessTransactionAsync(request);
 
             Assert.Equal(statusMessage, transaction.StatusMessage);
             Assert.Equal(TransactionStatus.DetailsInvalid, transaction.Status);

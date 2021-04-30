@@ -1,4 +1,6 @@
 ﻿using CompanyX.ProjectX.Domain.Interfaces;
+using CompanyX.ProjectX.Domain.Models;
+using CompanyX.ProjectX.Mocks;
 using CompanyX.ProjectX.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -6,6 +8,8 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CompanyX.ProjectX.WebApi.ExtensionMethods
 {
@@ -37,7 +41,27 @@ namespace CompanyX.ProjectX.WebApi.ExtensionMethods
         /// <param name="services">The services collection.</param>
         public static void InjectDependencies(this IServiceCollection services)
         {
-            services.AddSingleton<IValueService, ValueService>();
+            services.AddHttpClient();
+            services.AddSingleton<ITransactionProcessor, TransactionProcessor>();
+            services.AddSingleton<ITransactionReader, TransactionReader>();
+            services.AddSingleton<IBank, MockBank>();
+            services.AddSingleton<IRepository<Transaction>, MockTransactionRepository>();
+            services.AddSingleton<IValidator<TransactionRequest>, TransactionRequestValidator>();
+            services.AddSingleton<ISanitiser<Transaction>, TransactionSanitiser>();
+        }
+
+        /// <summary>
+        /// Configures the default JSON serialisation options.
+        /// </summary>
+        /// <param name="services">The services collection.</param>
+        public static void ConfigureJsonSerialiser(this IServiceCollection services)
+        {
+            services.AddMvc().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
         }
 
         private static OpenApiInfo CreateApiInfo(AssemblyName assemblyName)

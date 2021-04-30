@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace CompanyX.ProjectX.Domain.Interfaces
 {
@@ -17,12 +16,6 @@ namespace CompanyX.ProjectX.Domain.Interfaces
         /// <param name="id">The id of the item to return.</param>
         /// <returns>The item, if found; otherwise null.</returns>
         Task<T> GetItemAsync(string id);
-
-        /// <summary>
-        /// Retrieves all items.
-        /// </summary>
-        /// <returns>All items.</returns>
-        Task<IEnumerable<T>> GetAllAsync();
 
         /// <summary>
         /// Saves an item.

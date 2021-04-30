@@ -11,9 +11,12 @@ namespace CompanyX.ProjectX.Tests.Unit
         {
             return new Transaction
             {
-                Id = NewGuid,
                 Request = CreateRequest(),
-                Status = TransactionStatus.Successful
+                Response = new TransactionResponse
+                {
+                    Id = NewGuid,
+                    Status = TransactionStatus.Successful
+                }
             };
         }
 

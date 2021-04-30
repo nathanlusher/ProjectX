@@ -9,7 +9,12 @@ namespace CompanyX.ProjectX.Services
         /// <inheritdoc/>
         public Transaction Sanitise(Transaction item)
         {
-            Card card = item.Request.Shopper.Card;
+            Card card = item?.Request?.Shopper?.Card;
+
+            if (card == null)
+            {
+                return item;
+            }
 
             card.Number = $"****{card.Number[^4..]}";
             card.SecurityCode = null;

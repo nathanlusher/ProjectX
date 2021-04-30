@@ -28,6 +28,11 @@ namespace CompanyX.ProjectX.Services
 
         private static ValidationResult ValidateCardNumber(TransactionRequest item)
         {
+            if (item?.Shopper?.Card?.Number == null)
+            {
+                return ValidationResult.Invalid(InvalidMessages.CardNumber);
+            }
+
             string number = Regex.Replace(item.Shopper.Card.Number, "[^0-9]", "");
 
             if (number.Length != 16)
@@ -40,6 +45,11 @@ namespace CompanyX.ProjectX.Services
 
         private static ValidationResult ValidateCardExpiryMonth(TransactionRequest item)
         {
+            if (item?.Shopper?.Card?.ExpiryMonth == null)
+            {
+                return ValidationResult.Invalid(InvalidMessages.CardNumber);
+            }
+
             uint month = item.Shopper.Card.ExpiryMonth;
 
             if (month > 0 && month < 13)
@@ -52,6 +62,11 @@ namespace CompanyX.ProjectX.Services
 
         private static ValidationResult ValidateCardExpiryYear(TransactionRequest item)
         {
+            if (item?.Shopper?.Card?.ExpiryYear == null)
+            {
+                return ValidationResult.Invalid(InvalidMessages.CardNumber);
+            }
+
             uint year = item.Shopper.Card.ExpiryYear;
 
             if (year < DateTime.UtcNow.AddYears(10).Year && year > DateTime.UtcNow.AddYears(-10).Year)

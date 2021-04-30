@@ -3,7 +3,7 @@
     /// <summary>
     /// The response to a transaction request.
     /// </summary>
-    public class TransactionRequestResponse
+    public class BankTransactionRequestResponse
     {
         /// <summary>
         /// The response code.
