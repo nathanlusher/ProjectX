@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace CompanyX.ProjectX.WebApi.Controllers
 {
     /// <summary>
-    /// Controller for returning a string value.
+    /// Controller for processing transactions.
     /// </summary>
     [ApiController]
     [Route("[controller]")]
@@ -39,10 +39,10 @@ namespace CompanyX.ProjectX.WebApi.Controllers
         ///
         /// </remarks>
         /// <param name="id">The id of the transaction to retrieve.</param>
-        /// <returns>The result of the currency conversion.</returns>
+        /// <returns>The request transaction, if found.</returns>
         /// <response code="200">Transaction was found.</response>
         /// <response code="404">Transaction was not found.</response>
-        /// <response code="500">An error occurred during conversion.</response>
+        /// <response code="500">An error occurred during the retrieval of the transaction.</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -116,10 +116,10 @@ namespace CompanyX.ProjectX.WebApi.Controllers
         ///
         /// </remarks>
         /// <param name="request">The transaction request to process.</param>
-        /// <returns>The result of the currency conversion.</returns>
-        /// <response code="200">Conversion processed.</response>
-        /// <response code="404">Transaction was not found.</response>
-        /// <response code="500">An error occurred during conversion.</response>
+        /// <returns>The result of the transaction request.</returns>
+        /// <response code="200">Transaction processed.</response>
+        /// <response code="400">Transaction request is invalid.</response>
+        /// <response code="500">An error occurred during the processing of the transaction.</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
